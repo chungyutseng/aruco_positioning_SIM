@@ -30,10 +30,10 @@ kp_y = 1.2
 kp_z = 1.2
 kp_yaw = 1.5
 
-kd_x = 0
-kd_y = 0
-kd_z = 0
-kd_yaw = 0.0
+kd_x = 0.01
+kd_y = 0.01
+kd_z = 0.01
+kd_yaw = 0.01
 
 previous_time_x = time.time() - time.time()
 previous_time_y = time.time() - time.time()
@@ -215,7 +215,7 @@ def pd_controller(x_p, y_p, z_p, yaw_a, dx_p, dy_p, dz_p, dyaw_a, KP_X, KP_Y, KP
             pub_vel_y_linear.publish(vel_msg.linear.y)
             pub_vel_z_linear.publish(vel_msg.linear.z)
             pub_vel_z_angular.publish(vel_msg.angular.z)
-            pub_vel.publish(vel_msg)
+            # pub_vel.publish(vel_msg)
     else:
         vel_msg = Twist()
         vel_msg.linear.x = 0.0
@@ -224,7 +224,7 @@ def pd_controller(x_p, y_p, z_p, yaw_a, dx_p, dy_p, dz_p, dyaw_a, KP_X, KP_Y, KP
         vel_msg.angular.x = 0.0
         vel_msg.angular.y = 0.0
         vel_msg.angular.z = 0.0
-        pub_vel.publish(vel_msg)
+        # pub_vel.publish(vel_msg)
 
 rospy.Subscriber("/x", Float32, callback=get_x_position)
 rospy.Subscriber("/y", Float32, callback=get_y_position)
