@@ -10,8 +10,10 @@ from std_msgs.msg import Float32
 
 marker_size = 10
 calib_path = ""
-camera_matrix = np.loadtxt('/home/chungyu/.ros/cameraMatrix_Ardrone.txt', delimiter = ',')
-camera_distortion = np.loadtxt('/home/chungyu/.ros/cameraDistortion_Ardrone.txt', delimiter = ',')
+# camera_matrix = np.loadtxt('/home/chungyu/.ros/cameraMatrix_Ardrone.txt', delimiter = ',')
+# camera_distortion = np.loadtxt('/home/chungyu/.ros/cameraDistortion_Ardrone.txt', delimiter = ',')
+camera_matrix = np.loadtxt('/home/chungyu/.ros/cameraMatrix_RealSense.txt', delimiter = ',')
+camera_distortion = np.loadtxt('/home/chungyu/.ros/cameraDistortion_RealSense.txt', delimiter = ',')
 R_flip = np.zeros((3, 3), dtype = np.float32)
 # R_flip[0, 0] = 1
 # R_flip[1, 2] = -1
@@ -35,13 +37,20 @@ cmd_vel_angular_z = 0.0
 
 marker_detected_flag = 0.0
 
+x_offset = 18.2941656835168 * 0.01
+y_offset = -0.2538466017278 * 0.01
+z_offset =  (7.3461554016761 - 0.0399999991374) * 0.01
+
 # aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_100)
 aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_100)
 parameters = aruco.DetectorParameters_create()
+# parameters.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_APRILTAG
 board_ids = np.array([[0]], dtype = np.int32)
 # board_corners = [np.array([[0.0, 0.0, 0.1], [0.1, 0.0, 0.1], [0.1, 0.0, 0.0], [0.0, 0.0, 0.0]], dtype = np.float32)] # clockwise, beginning from the top-left corner
 # board_corners = [np.array([[0.0, 0.0, 0.2], [0.2, 0.0, 0.2], [0.2, 0.0, 0.0], [0.0, 0.0, 0.0]], dtype = np.float32)] # clockwise, beginning from the top-left corner
-board_corners = [np.array([[0.0, 0.33, 0.33], [0.0, 0.0, 0.33], [0.0, 0.0, 0.0], [0.0, 0.33, 0.0]], dtype = np.float32)] # clockwise, beginning from the bottom-left corner
+# board_corners = [np.array([[0.0, 0.33, 0.33], [0.0, 0.0, 0.33], [0.0, 0.0, 0.0], [0.0, 0.33, 0.0]], dtype = np.float32)] # clockwise, beginning from the bottom-left corner
+board_corners = [np.array([[2.9975, 0.165, 1.165], [2.9975, -0.165, 1.165], [2.9975, -0.165, 0.835], [2.9975, 0.165, 0.835]], dtype = np.float32)] # clockwise, beginning from the bottom-left corner
+# board_corners = [np.array([[0.0, 0.165, 1.165], [0.0, -0.165, 1.165], [0.0, -0.165, 0.835], [0.0, 0.165, 0.835]], dtype = np.float32)] # clockwise, beginning from the bottom-left corner
 board = aruco.Board_create(board_corners, aruco_dict, board_ids)
 
 pub_x = rospy.Publisher("/x", Float32, queue_size=10)
@@ -119,7 +128,7 @@ def convert_color_image(ros_image):
             # print(rvec)
             # print(tvec)
 
-            aruco.drawAxis(color_image, camera_matrix, camera_distortion, rvec, tvec, 0.1)
+            # aruco.drawAxis(color_image, camera_matrix, camera_distortion, rvec, tvec, 0.1)
 
             R_ct = np.matrix(cv2.Rodrigues(rvec)[0])
             R_tc = R_ct.T
@@ -134,9 +143,14 @@ def convert_color_image(ros_image):
 
             x_camera = pos_camera[0] 
             y_camera = pos_camera[1] 
-            z_camera = pos_camera[2] 
+            z_camera = pos_camera[2]
 
-            str_position = "CAMERA Position x=%4.0f y=%4.0f z=%4.0f"%(pos_camera[0]*100, pos_camera[1]*100, pos_camera[2]*100)
+            x_camera = x_camera - x_offset
+            y_camera = y_camera - y_offset
+            z_camera = z_camera - z_offset 
+
+            # str_position = "CAMERA Position x=%4.5f y=%4.5f z=%4.5f"%(pos_camera[0]*100, pos_camera[1]*100, pos_camera[2]*100)
+            str_position = "CAMERA Position x=%4.5f y=%4.5f z=%4.5f"%(x_camera*100, y_camera*100, z_camera*100)
             str_attitude = "CAMERA Attitude roll=%4.0f pitch=%4.0f yaw=%4.0f"%(roll_camera, pitch_camera, yaw_camera)
             cmd_vel_drone = "x_vel = %4.3f y_vel = %4.3f z_vel = %4.3f yaw_vel = %4.3f"%(cmd_vel_linear_x, cmd_vel_linear_y, cmd_vel_linear_z, cmd_vel_angular_z)
             cv2.putText(color_image, str_position, (0, 200), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
@@ -162,8 +176,8 @@ def convert_color_image(ros_image):
     except CvBridgeError as e:
         print(e)
 
-# rospy.Subscriber("/camera/color/image_raw", Image, callback=convert_color_image, queue_size=10)
-rospy.Subscriber("/ardrone/front/image_raw", Image, callback=convert_color_image, queue_size=10)
+rospy.Subscriber("/camera/color/image_raw", Image, callback=convert_color_image, queue_size=10)
+# rospy.Subscriber("/ardrone/front/image_raw", Image, callback=convert_color_image, queue_size=10)
 rospy.Subscriber("/cmd_vel_linear_x", Float32, callback=get_cmd_vel_linear_x, queue_size=10)
 rospy.Subscriber("/cmd_vel_linear_y", Float32, callback=get_cmd_vel_linear_y, queue_size=10)
 rospy.Subscriber("/cmd_vel_linear_z", Float32, callback=get_cmd_vel_linear_z, queue_size=10)

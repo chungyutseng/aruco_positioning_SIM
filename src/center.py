@@ -42,9 +42,9 @@ def pub_on():
     global marker_detected_flag
     rospy.Subscriber("/marker_detected", Float32, callback=get_marker_detected_flag)
     while not rospy.is_shutdown():
-        pub_desired_x.publish(-2.0)
+        pub_desired_x.publish(2.0)
         pub_desired_y.publish(0.0)
-        pub_desired_z.publish(0.1)
+        pub_desired_z.publish(1.0)
         pub_desired_yaw.publish(0.0)
         if marker_detected_flag == 1.0:
             pub_control.publish(1.0)
@@ -68,15 +68,15 @@ def pub_on_1():
                 flag = 1
             time_old = time_now
         if flag == 0:
-            pub_desired_x.publish(-1.5)
+            pub_desired_x.publish(1.8)
             pub_desired_y.publish(0.0)
-            pub_desired_z.publish(0.0)
+            pub_desired_z.publish(0.9)
             pub_desired_yaw.publish(0.0)
             pub_control.publish(1.0)
         if flag == 1:
-            pub_desired_x.publish(-2.0)
+            pub_desired_x.publish(1.3)
             pub_desired_y.publish(0.0)
-            pub_desired_z.publish(0.0)
+            pub_desired_z.publish(0.9)
             pub_desired_yaw.publish(0.0)
             pub_control.publish(1.0)
         rate.sleep()
