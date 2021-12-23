@@ -74,9 +74,9 @@ def pub_on_1():
             pub_desired_yaw.publish(0.0)
             pub_control.publish(1.0)
         if flag == 1:
-            pub_desired_x.publish(1.3)
-            pub_desired_y.publish(0.0)
-            pub_desired_z.publish(0.9)
+            pub_desired_x.publish(1.5)
+            pub_desired_y.publish(0.5)
+            pub_desired_z.publish(0.7)
             pub_desired_yaw.publish(0.0)
             pub_control.publish(1.0)
         rate.sleep()
