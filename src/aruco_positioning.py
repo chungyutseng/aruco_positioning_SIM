@@ -173,9 +173,9 @@ def convert_color_image(ros_image):
             y_camera = pos_camera[1] 
             z_camera = pos_camera[2]
 
-            x_camera = x_camera - x_offset
-            y_camera = y_camera - y_offset
-            z_camera = z_camera - z_offset 
+            # x_camera = x_camera - x_offset
+            # y_camera = y_camera - y_offset
+            # z_camera = z_camera - z_offset 
 
             # str_position = "CAMERA Position x=%4.5f y=%4.5f z=%4.5f"%(pos_camera[0]*100, pos_camera[1]*100, pos_camera[2]*100)
             str_position = "CAMERA Position x=%4.5f y=%4.5f z=%4.5f"%(x_camera*100, y_camera*100, z_camera*100)
