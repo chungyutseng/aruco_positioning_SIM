@@ -83,14 +83,14 @@ def pub_on_1():
 
 if __name__ == '__main__':
     try:
-        takeoff()
+        # takeoff()
         # pub_desired()
         # time.sleep(5)
         # pub_takeoff = rospy.Publisher('/ardrone/takeoff', EmptyMsg, queue_size=10)
         # pub_takeoff.publish()
         # time.sleep(1)
         # pub_on()
-        pub_on_1()
+        # pub_on_1()
         # pub_control = rospy.Publisher('/controller_on', Float32, queue_size=10)
         # pub_control.publish(1.0)
     except rospy.ROSInterruptException:
