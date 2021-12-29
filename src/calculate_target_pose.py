@@ -40,7 +40,7 @@ def isRotationMatrix(R):
 # '''
 #########################################################
 def rotationMatrixToEulerAngles(R):
-    assert(isRotationMatrix(R))
+    # assert(isRotationMatrix(R))
 
     sy = math.sqrt(R[0, 0] * R[0, 0] + R[1, 0] * R[1, 0])
 
