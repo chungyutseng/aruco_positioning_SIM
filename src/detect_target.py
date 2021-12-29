@@ -49,7 +49,7 @@ def convert_color_image(ros_image):
             R_t2c = np.matrix(cv2.Rodrigues(rvec)[0])
             t_t2c = np.matrix(tvec)
 
-            aruco.drawAxis(color_image, camera_matrix, camera_distortion, rvec, tvec, 0.1)
+            # aruco.drawAxis(color_image, camera_matrix, camera_distortion, rvec, tvec, 0.1)
 
             # rotation_array_t2c[0] = R_t2c[0, 0]
             # rotation_array_t2c[1] = R_t2c[0, 1]
@@ -89,9 +89,9 @@ def convert_color_image(ros_image):
             target_detected_flag = 0.0
             transformation_array_t2c = np.zeros((16,), dtype=np.float32)
 
-        cv2.namedWindow("Color")
-        cv2.imshow("Color", color_image)
-        cv2.waitKey(10)
+        # cv2.namedWindow("Color")
+        # cv2.imshow("Color", color_image)
+        # cv2.waitKey(10)
 
     except CvBridgeError as e:
         print(e)
