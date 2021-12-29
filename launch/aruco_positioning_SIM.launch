@@ -7,8 +7,10 @@
 	<node pkg="aruco_positioning_SIM" type="aruco_positioning.py" name="aruco_positioning" output="screen"/>
     <node pkg="aruco_positioning_SIM" type="controller.py" name="controller" output="screen"/>
     <node pkg="aruco_positioning_SIM" type="center.py" name="center" output="screen"/>
+    <node pkg="aruco_positioning_SIM" type="detect_target.py" name="detect_target" output="screen"/>
+    <node pkg="aruco_positioning_SIM" type="calculate_target_pose.py" name="calculate_target_pose" output="screen"/>
     <!-- <node name="record_topics_for_verification" pkg="rosbag" type="record" output="screen"
         args="-o data1 /x /y /z /roll /pitch /yaw /desired_x /desired_y /desired_y /desired_z /desired_yaw /controller_on /marker_detected /camera/color/image_raw /cmd_vel_linear_x /cmd_vel_linear_y /cmd_vel_linear_z /cmd_vel_angular_z /ground_truth/state"/>  -->
-    <node name="record_topics_for_verification" pkg="rosbag" type="record" output="screen"
-        args="-o data1 /x /y /z /roll /pitch /yaw /desired_x /desired_y /desired_y /desired_z /desired_yaw /controller_on /marker_detected /cmd_vel_linear_x /cmd_vel_linear_y /cmd_vel_linear_z /cmd_vel_angular_z /ground_truth/state /ardrone/takeoff /ardrone/land"/> 
+    <!-- <node name="record_topics_for_verification" pkg="rosbag" type="record" output="screen"
+        args="-o data1 /x /y /z /roll /pitch /yaw /desired_x /desired_y /desired_y /desired_z /desired_yaw /controller_on /marker_detected /cmd_vel_linear_x /cmd_vel_linear_y /cmd_vel_linear_z /cmd_vel_angular_z /ground_truth/state /ardrone/takeoff /ardrone/land"/>  -->
 </launch>

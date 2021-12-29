@@ -44,8 +44,9 @@ y_offset = -0.2538466017278 * 0.01
 z_offset =  (7.3461554016761 - 0.0399999991374) * 0.01
 
 #Transformation matrix from drone image frame to marker frame
-rotation_array_c2m = np.zeros((9,), dtype=np.float32)
-translation_array_c2m = np.zeros((3,), dtype=np.float32)
+# rotation_array_c2m = np.zeros((9,), dtype=np.float32)
+# translation_array_c2m = np.zeros((3,), dtype=np.float32)
+transformation_array_c2m = np.zeros((16,), dtype=np.float32)
 
 # aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_100)
 aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_100)
@@ -59,6 +60,10 @@ board_corners = [np.array([[2.9975, 0.165, 1.165], [2.9975, -0.165, 1.165], [2.9
 # board_corners = [np.array([[0.0, 0.165, 1.165], [0.0, -0.165, 1.165], [0.0, -0.165, 0.835], [0.0, 0.165, 0.835]], dtype = np.float32)] # clockwise, beginning from the bottom-left corner
 board = aruco.Board_create(board_corners, aruco_dict, board_ids)
 
+# board_ids_Q = np.array([[0]], dtype = np.int32)
+# board_corners_Q = [np.array([[0.0, 0.33, 0.33], [0.0, 0.0, 0.33], [0.0, 0.0, 0.0], [0.0, 0.33, 0.0]], dtype = np.float32)] # clockwise, beginning from the bottom-left corner
+# board_Q = aruco.Board_create(board_corners_Q, aruco_dict, board_ids_Q)
+
 pub_x = rospy.Publisher("/x", Float32, queue_size=10)
 pub_y = rospy.Publisher("/y", Float32, queue_size=10)
 pub_z = rospy.Publisher("/z", Float32, queue_size=10)
@@ -66,8 +71,9 @@ pub_roll = rospy.Publisher("/roll", Float32, queue_size=10)
 pub_pitch = rospy.Publisher("/pitch", Float32, queue_size=10)
 pub_yaw = rospy.Publisher("/yaw", Float32, queue_size=10)
 pub_marker_detected_flag = rospy.Publisher("/marker_detected", Float32, queue_size=10)
-pub_rot_array_positioning = rospy.Publisher('rot_array_positioning', numpy_msg(Floats),queue_size=10)
-pub_trans_array_positioning = rospy.Publisher('trans_array_positioning', numpy_msg(Floats),queue_size=10)
+# pub_rot_array_positioning = rospy.Publisher('rot_array_positioning', numpy_msg(Floats),queue_size=10)
+# pub_trans_array_positioning = rospy.Publisher('trans_array_positioning', numpy_msg(Floats),queue_size=10)
+pub_transformation_array_positioning = rospy.Publisher('/transformation_array_positioning', numpy_msg(Floats), queue_size=10)
 
 rospy.init_node("aruco_positioning", anonymous=True)
 
@@ -119,11 +125,11 @@ def get_cmd_vel_angular_z(data):
     cmd_vel_angular_z = data.data
 
 def convert_color_image(ros_image):
-    global pub_x, pub_y, pub_z, pub_roll, pub_pitch, pub_yaw
     global roll_camera, pitch_camera, yaw_camera, x_camera, y_camera, z_camera
     global cmd_vel_linear_x, cmd_vel_linear_y, cmd_vel_linear_z, cmd_vel_angular_z
-    global marker_detected_flag, pub_marker_detected_flag
-    global rotation_array_c2m, translation_array_c2m
+    global marker_detected_flag
+    # global rotation_array_c2m, translation_array_c2m
+    global transformation_array_c2m
     bridge = CvBridge()
     try:
         color_image = bridge.imgmsg_to_cv2(ros_image, "bgr8")
@@ -137,7 +143,13 @@ def convert_color_image(ros_image):
             # print(rvec)
             # print(tvec)
 
+            # retval_Q, rvec_Q, tvec_Q = aruco.estimatePoseBoard(corners, ids, board_Q, camera_matrix, camera_distortion, None, None)
+
             # aruco.drawAxis(color_image, camera_matrix, camera_distortion, rvec, tvec, 0.1)
+
+            # R_ct_Q = np.matrix(cv2.Rodrigues(rvec_Q)[0])
+            # R_tc_Q = R_ct_Q.T            
+            # pos_camera_Q = -R_tc_Q * np.matrix(tvec_Q)
 
             R_ct = np.matrix(cv2.Rodrigues(rvec)[0])
             R_tc = R_ct.T
@@ -148,19 +160,39 @@ def convert_color_image(ros_image):
             pos_camera = -R_tc * np.matrix(tvec)
 
             ########################################################
-            rotation_array_c2m[0] = R_tc[0, 0]
-            rotation_array_c2m[1] = R_tc[0, 1]
-            rotation_array_c2m[2] = R_tc[0, 2]
-            rotation_array_c2m[3] = R_tc[1, 0]
-            rotation_array_c2m[4] = R_tc[1, 1]
-            rotation_array_c2m[5] = R_tc[1, 2]
-            rotation_array_c2m[6] = R_tc[2, 0]
-            rotation_array_c2m[7] = R_tc[2, 1]
-            rotation_array_c2m[8] = R_tc[2, 2]
+            # rotation_array_c2m[0] = R_tc[0, 0]
+            # rotation_array_c2m[1] = R_tc[0, 1]
+            # rotation_array_c2m[2] = R_tc[0, 2]
+            # rotation_array_c2m[3] = R_tc[1, 0]
+            # rotation_array_c2m[4] = R_tc[1, 1]
+            # rotation_array_c2m[5] = R_tc[1, 2]
+            # rotation_array_c2m[6] = R_tc[2, 0]
+            # rotation_array_c2m[7] = R_tc[2, 1]
+            # rotation_array_c2m[8] = R_tc[2, 2]
 
-            translation_array_c2m[0] = pos_camera[0]
-            translation_array_c2m[1] = pos_camera[1]
-            translation_array_c2m[2] = pos_camera[2]
+            # translation_array_c2m[0] = pos_camera[0]
+            # translation_array_c2m[1] = pos_camera[1]
+            # translation_array_c2m[2] = pos_camera[2]
+
+            transformation_array_c2m[0] = R_tc[0, 0]
+            transformation_array_c2m[1] = R_tc[0, 1]
+            transformation_array_c2m[2] = R_tc[0, 2]
+            transformation_array_c2m[3] = pos_camera[0] - 2.9975
+
+            transformation_array_c2m[4] = R_tc[1, 0]
+            transformation_array_c2m[5] = R_tc[1, 1]
+            transformation_array_c2m[6] = R_tc[1, 2]
+            transformation_array_c2m[7] = pos_camera[1] - (-0.165)
+
+            transformation_array_c2m[8] = R_tc[2, 0]
+            transformation_array_c2m[9] = R_tc[2, 1]
+            transformation_array_c2m[10] = R_tc[2, 2]
+            transformation_array_c2m[11] = pos_camera[2] - 0.835
+
+            transformation_array_c2m[12] = 0.0
+            transformation_array_c2m[13] = 0.0
+            transformation_array_c2m[14] = 0.0
+            transformation_array_c2m[15] = 1.0         
             ########################################################
 
             roll_camera, pitch_camera, yaw_camera = rotationMatrixToEulerAngles(R_flip * R_tc)
@@ -194,8 +226,19 @@ def convert_color_image(ros_image):
 
         else:
             marker_detected_flag = 0.0
-
-        pub_marker_detected_flag.publish(marker_detected_flag)
+            transformation_array_c2m = np.zeros((16,), dtype=np.float32)
+            # x_camera = -9.99
+            # y_camera = -9.99
+            # z_camera = -9.99
+            # roll_camera = -999
+            # pitch_camera = -999
+            # yaw_camera = -999
+            # str_position = "CAMERA Position x=%4.5f y=%4.5f z=%4.5f"%(x_camera*100, y_camera*100, z_camera*100)
+            # str_attitude = "CAMERA Attitude roll=%4.0f pitch=%4.0f yaw=%4.0f"%(roll_camera, pitch_camera, yaw_camera)
+            # cmd_vel_drone = "x_vel = %4.3f y_vel = %4.3f z_vel = %4.3f yaw_vel = %4.3f"%(cmd_vel_linear_x, cmd_vel_linear_y, cmd_vel_linear_z, cmd_vel_angular_z)
+            # cv2.putText(color_image, str_position, (0, 200), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
+            # cv2.putText(color_image, str_attitude, (0, 250), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
+            # cv2.putText(color_image, cmd_vel_drone, (0, 300), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
         cv2.namedWindow("Color")
         cv2.imshow("Color", color_image)
@@ -219,8 +262,10 @@ while not rospy.is_shutdown():
     pub_roll.publish(roll_camera)
     pub_pitch.publish(pitch_camera)
     pub_yaw.publish(yaw_camera)
-    pub_rot_array_positioning.publish(rotation_array_c2m)
-    pub_trans_array_positioning.publish(translation_array_c2m)
+    # pub_rot_array_positioning.publish(rotation_array_c2m)
+    # pub_trans_array_positioning.publish(translation_array_c2m)
+    pub_marker_detected_flag.publish(marker_detected_flag)
+    pub_transformation_array_positioning.publish(transformation_array_c2m)
     rate.sleep()
 #################################################################################################################################
 # def aruco_positioning():
