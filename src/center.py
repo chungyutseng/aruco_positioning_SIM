@@ -42,7 +42,7 @@ def pub_on():
     global marker_detected_flag
     rospy.Subscriber("/marker_detected", Float32, callback=get_marker_detected_flag)
     while not rospy.is_shutdown():
-        pub_desired_x.publish(2.0)
+        pub_desired_x.publish(1.5)
         pub_desired_y.publish(0.0)
         pub_desired_z.publish(1.0)
         pub_desired_yaw.publish(0.0)
@@ -83,13 +83,13 @@ def pub_on_1():
 
 if __name__ == '__main__':
     try:
-        # takeoff()
+        takeoff()
         # pub_desired()
         # time.sleep(5)
         # pub_takeoff = rospy.Publisher('/ardrone/takeoff', EmptyMsg, queue_size=10)
         # pub_takeoff.publish()
         # time.sleep(1)
-        # pub_on()
+        pub_on()
         # pub_on_1()
         # pub_control = rospy.Publisher('/controller_on', Float32, queue_size=10)
         # pub_control.publish(1.0)

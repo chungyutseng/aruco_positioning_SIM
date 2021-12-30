@@ -136,7 +136,13 @@ def convert_color_image(ros_image):
         gray_image = cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
         corners, ids, rejected = aruco.detectMarkers(gray_image, aruco_dict, parameters = parameters)
 
-        if len(corners) > 0:
+        # print(ids)
+
+        if ids is None:
+            ids = np.array([[-1], [-1]], dtype=np.float32)
+
+        if (np.any(ids[:] == 0)):
+        # if len(corners) > 0:
             marker_detected_flag = 1.0
 
             retval, rvec, tvec = aruco.estimatePoseBoard(corners, ids, board, camera_matrix, camera_distortion, None, None)
@@ -233,12 +239,12 @@ def convert_color_image(ros_image):
             # roll_camera = -999
             # pitch_camera = -999
             # yaw_camera = -999
-            # str_position = "CAMERA Position x=%4.5f y=%4.5f z=%4.5f"%(x_camera*100, y_camera*100, z_camera*100)
-            # str_attitude = "CAMERA Attitude roll=%4.0f pitch=%4.0f yaw=%4.0f"%(roll_camera, pitch_camera, yaw_camera)
-            # cmd_vel_drone = "x_vel = %4.3f y_vel = %4.3f z_vel = %4.3f yaw_vel = %4.3f"%(cmd_vel_linear_x, cmd_vel_linear_y, cmd_vel_linear_z, cmd_vel_angular_z)
-            # cv2.putText(color_image, str_position, (0, 200), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
-            # cv2.putText(color_image, str_attitude, (0, 250), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
-            # cv2.putText(color_image, cmd_vel_drone, (0, 300), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
+            str_position = "CAMERA Position x= None y= None z= None"
+            str_attitude = "CAMERA Attitude roll= None pitch= None yaw= None"
+            cmd_vel_drone = "x_vel = None y_vel = None z_vel = None yaw_vel = None"
+            cv2.putText(color_image, str_position, (0, 200), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
+            cv2.putText(color_image, str_attitude, (0, 250), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
+            cv2.putText(color_image, cmd_vel_drone, (0, 300), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
         cv2.namedWindow("Color")
         cv2.imshow("Color", color_image)
@@ -256,12 +262,13 @@ rospy.Subscriber("/cmd_vel_angular_z", Float32, callback=get_cmd_vel_angular_z, 
 
 while not rospy.is_shutdown():
     rate = rospy.Rate(30)
-    pub_x.publish(x_camera)
-    pub_y.publish(y_camera)
-    pub_z.publish(z_camera)
-    pub_roll.publish(roll_camera)
-    pub_pitch.publish(pitch_camera)
-    pub_yaw.publish(yaw_camera)
+    if marker_detected_flag == 1.0:
+        pub_x.publish(x_camera)
+        pub_y.publish(y_camera)
+        pub_z.publish(z_camera)
+        pub_roll.publish(roll_camera)
+        pub_pitch.publish(pitch_camera)
+        pub_yaw.publish(yaw_camera)
     # pub_rot_array_positioning.publish(rotation_array_c2m)
     # pub_trans_array_positioning.publish(translation_array_c2m)
     pub_marker_detected_flag.publish(marker_detected_flag)

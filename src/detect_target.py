@@ -43,7 +43,11 @@ def convert_color_image(ros_image):
         gray_image = cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
         corners, ids, rejected = aruco.detectMarkers(gray_image, aruco_dict, parameters = parameters)
 
-        if len(corners) > 0:
+        if ids is None:
+            ids = np.array([[-1], [-1]], dtype=np.float32)
+
+        if (np.any(ids[:] == 1)):
+        # if len(corners) > 0:
             target_detected_flag = 1.0
             retval, rvec, tvec = aruco.estimatePoseBoard(corners, ids, board, camera_matrix, camera_distortion, None, None)
             R_t2c = np.matrix(cv2.Rodrigues(rvec)[0])

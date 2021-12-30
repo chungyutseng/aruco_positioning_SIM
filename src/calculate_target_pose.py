@@ -12,6 +12,9 @@ from rospy_tutorials.msg import Floats
 
 transformation_array_positioning = np.zeros((16,), dtype=np.float32)
 transformation_array_target = np.zeros((16,), dtype=np.float32)
+target_x = 0.0
+target_y = 0.0
+target_z = 0.0
 target_roll = 0.0
 target_pitch = 0.0
 target_yaw = 0.0
@@ -22,6 +25,13 @@ transformation_matrix_positioning_marker_to_world = np.array([[1.0, 0.0, 0.0, 2.
 
 target_pose = np.zeros((4, 4), dtype=np.float32)
 target_rotation_matrix = np.zeros((3, 3), dtype=np.float32)
+
+pub_target_x = rospy.Publisher("/target_x", Float32, queue_size=10)
+pub_target_y = rospy.Publisher("/target_y", Float32, queue_size=10)
+pub_target_z = rospy.Publisher("/target_z", Float32, queue_size=10)
+pub_target_roll = rospy.Publisher("/target_roll", Float32, queue_size=10)
+pub_target_pitch = rospy.Publisher("/target_pitch", Float32, queue_size=10)
+pub_target_yaw = rospy.Publisher("/target_yaw", Float32, queue_size=10)
 
 rospy.init_node("calculate_target_pose", anonymous=True)
 
@@ -72,11 +82,15 @@ def get_transformation_array_target(data):
 def get_target_detected_flag(data):
     global target_pose
     global target_rotation_matrix
+    global target_x, target_y, target_z
     global target_roll, target_pitch, target_yaw
     temp = np.zeros((4, 4), dtype=np.float32)
     temp = transformation_matrix_positioning_marker_to_world.dot(transformation_matrix_positioning)
     target_pose = temp.dot(transformation_matrix_target)
     if (target_pose[3, 3] != 0):
+        target_x = target_pose[0, 3]
+        target_y = target_pose[1, 3]
+        target_z = target_pose[2, 3]
         target_rotation_matrix = target_pose[0:3, 0:3]
         target_roll, target_pitch, target_yaw = rotationMatrixToEulerAngles(target_rotation_matrix)
         target_roll = math.degrees(target_roll)
@@ -95,4 +109,11 @@ while not rospy.is_shutdown():
     # print(target_pose)
     print("roll = %4.5f pitch = %4.5f yaw = %4.5f"%(target_roll, target_pitch, target_yaw))
     # print(target_rotation_matrix)
+    if (target_pose[3, 3] != 0):
+        pub_target_x.publish(target_x)
+        pub_target_y.publish(target_y)
+        pub_target_z.publish(target_z)
+        pub_target_roll.publish(target_roll)
+        pub_target_pitch.publish(target_pitch)
+        pub_target_yaw.publish(target_yaw)
     rate.sleep()
