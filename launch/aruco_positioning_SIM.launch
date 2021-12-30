@@ -6,7 +6,7 @@
 	<node pkg="aruco_positioning_SIM" type="fly_cmd.py" name="cmd" output="screen"/>
 	<node pkg="aruco_positioning_SIM" type="aruco_positioning.py" name="aruco_positioning" output="screen"/>
     <node pkg="aruco_positioning_SIM" type="controller.py" name="controller" output="screen"/>
-    <!-- <node pkg="aruco_positioning_SIM" type="center.py" name="center" output="screen"/> -->
+    <node pkg="aruco_positioning_SIM" type="center.py" name="center" output="screen"/>
     <node pkg="aruco_positioning_SIM" type="detect_target.py" name="detect_target" output="screen"/>
     <node pkg="aruco_positioning_SIM" type="calculate_target_pose.py" name="calculate_target_pose" output="screen"/>
     <!-- <node name="record_topics_for_verification" pkg="rosbag" type="record" output="screen"
