@@ -27,9 +27,9 @@ board = aruco.Board_create(board_corners, aruco_dict, board_ids)
 target_detected_flag = 0.0
 
 pub_target_detected_flag = rospy.Publisher("/target_detected", Float32, queue_size=10)
+pub_transformation_array_target = rospy.Publisher('/transformation_array_target', numpy_msg(Floats), queue_size=10)
 # pub_rot_array_target = rospy.Publisher('rot_array_target', numpy_msg(Floats),queue_size=10)
 # pub_trans_array_target = rospy.Publisher('trans_array_target', numpy_msg(Floats),queue_size=10)
-pub_transformation_array_target = rospy.Publisher('/transformation_array_target', numpy_msg(Floats), queue_size=10)
 
 rospy.init_node("detect_target", anonymous=True)
 

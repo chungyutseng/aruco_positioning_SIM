@@ -42,7 +42,7 @@ def pub_on():
     global marker_detected_flag
     rospy.Subscriber("/marker_detected", Float32, callback=get_marker_detected_flag)
     while not rospy.is_shutdown():
-        pub_desired_x.publish(1.5)
+        pub_desired_x.publish(1.9)
         pub_desired_y.publish(0.0)
         pub_desired_z.publish(1.0)
         pub_desired_yaw.publish(0.0)

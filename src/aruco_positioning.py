@@ -41,7 +41,8 @@ marker_detected_flag = 0.0
 
 x_offset = 18.2941656835168 * 0.01
 y_offset = -0.2538466017278 * 0.01
-z_offset =  (7.3461554016761 - 0.0399999991374) * 0.01
+# z_offset =  (7.3461554016761 - 0.0399999991374) * 0.01
+z_offset =  (7.3461554016761 - 3.99999991374) * 0.01
 
 #Transformation matrix from drone image frame to marker frame
 # rotation_array_c2m = np.zeros((9,), dtype=np.float32)
@@ -71,9 +72,9 @@ pub_roll = rospy.Publisher("/roll", Float32, queue_size=10)
 pub_pitch = rospy.Publisher("/pitch", Float32, queue_size=10)
 pub_yaw = rospy.Publisher("/yaw", Float32, queue_size=10)
 pub_marker_detected_flag = rospy.Publisher("/marker_detected", Float32, queue_size=10)
+pub_transformation_array_positioning = rospy.Publisher('/transformation_array_positioning', numpy_msg(Floats), queue_size=10)
 # pub_rot_array_positioning = rospy.Publisher('rot_array_positioning', numpy_msg(Floats),queue_size=10)
 # pub_trans_array_positioning = rospy.Publisher('trans_array_positioning', numpy_msg(Floats),queue_size=10)
-pub_transformation_array_positioning = rospy.Publisher('/transformation_array_positioning', numpy_msg(Floats), queue_size=10)
 
 rospy.init_node("aruco_positioning", anonymous=True)
 
@@ -211,9 +212,9 @@ def convert_color_image(ros_image):
             y_camera = pos_camera[1] 
             z_camera = pos_camera[2]
 
-            # x_camera = x_camera - x_offset
-            # y_camera = y_camera - y_offset
-            # z_camera = z_camera - z_offset 
+            x_camera = x_camera - x_offset
+            y_camera = y_camera - y_offset
+            z_camera = z_camera - z_offset 
 
             # str_position = "CAMERA Position x=%4.5f y=%4.5f z=%4.5f"%(pos_camera[0]*100, pos_camera[1]*100, pos_camera[2]*100)
             str_position = "CAMERA Position x=%4.5f y=%4.5f z=%4.5f"%(x_camera*100, y_camera*100, z_camera*100)
